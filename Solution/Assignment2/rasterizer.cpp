@@ -45,9 +45,9 @@ static bool insideTriangle(float x, float y, const Vector3f* _v)
 {
     const Vector3f p(x, y, 1.f);
 
-    const auto& a = _v[0];
-    const auto& b = _v[1];
-    const auto& c = _v[2];
+    const Vector3f a(_v[0].x(), _v[0].y(), 1.f);
+    const Vector3f b(_v[1].x(), _v[1].y(), 1.f);
+    const Vector3f c(_v[2].x(), _v[2].y(), 1.f);
 
     const auto z0 = (b-a).cross(p - a).z();
     const auto z1 = (c-b).cross(p - b).z();
