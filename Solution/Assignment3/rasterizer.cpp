@@ -149,18 +149,20 @@ auto to_vec4(const Eigen::Vector3f& v3, float w = 1.0f)
     return Vector4f(v3.x(), v3.y(), v3.z(), w);
 }
 
-static bool insideTriangle(int x, int y, const Vector4f* _v){
-    Vector3f v[3];
-    for(int i=0;i<3;i++)
-        v[i] = {_v[i].x(),_v[i].y(), 1.0};
-    Vector3f f0,f1,f2;
-    f0 = v[1].cross(v[0]);
-    f1 = v[2].cross(v[1]);
-    f2 = v[0].cross(v[2]);
-    Vector3f p(x,y,1.);
-    if((p.dot(f0)*f0.dot(v[2])>0) && (p.dot(f1)*f1.dot(v[0])>0) && (p.dot(f2)*f2.dot(v[1])>0))
-        return true;
-    return false;
+static bool insideTriangle(float x, float y, const Vector4f* _v)
+{
+    const Vector3f p(x, y, 1.f);
+
+    const Vector3f a(_v[0].x(), _v[0].y(), 1.f);
+    const Vector3f b(_v[1].x(), _v[1].y(), 1.f);
+    const Vector3f c(_v[2].x(), _v[2].y(), 1.f);
+
+    const auto z0 = (b-a).cross(p - a).z();
+    const auto z1 = (c-b).cross(p - b).z();
+    const auto z2 = (a-c).cross(p - c).z();
+
+    return z0 > 0 && z1 > 0 && z2 > 0 ||
+           z0 < 0 && z1 < 0 && z2 < 0;
 }
 
 static std::tuple<float, float, float> computeBarycentric2D(float x, float y, const Vector4f* v){
@@ -279,10 +281,10 @@ void rst::rasterizer::rasterize_triangle(
         {
             float px = x + 0.5f;
             float py = y + 0.5f;
-            if (!insideTriangle(px, py, t.v)) continue;
+            if (!insideTriangle(px, py, v.data())) continue;
 
             // screen space barycentric.
-            auto [alpha, beta, gamma] = computeBarycentric2D(px, py, t.v);
+            auto [alpha, beta, gamma] = computeBarycentric2D(px, py, v.data());
 
             // perspective correction factor.
             // 我们拿到的是 screen space 的插值权重 (受透视投影影响),
@@ -398,4 +400,3 @@ void rst::rasterizer::set_fragment_shader(std::function<Eigen::Vector3f(fragment
 {
     fragment_shader = frag_shader;
 }
-
