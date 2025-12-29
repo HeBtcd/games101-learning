@@ -245,17 +245,22 @@ Eigen::Vector3f displacement_fragment_shader(const fragment_shader_payload& payl
     float kh = 0.2, kn = 0.1;
     
     // TBN.
-    Eigen::Vector3f t = (normal.x() * normal.y() / std::sqrt(normal.x() * normal.x() + normal.z() * normal.z()),
-                         std::sqrt(normal.x() * normal.x() + normal.z() * normal.z()),
-                         normal.z() * normal.y() / std::sqrt(normal.x() * normal.x() + normal.z() * normal.z()));
+    Eigen::Vector3f t{
+        normal.x() * normal.y() / std::sqrt(normal.x() * normal.x() + normal.z() * normal.z()),
+        std::sqrt(normal.x() * normal.x() + normal.z() * normal.z()),
+        normal.z() * normal.y() / std::sqrt(normal.x() * normal.x() + normal.z() * normal.z())
+    };
     Eigen::Vector3f b = normal.cross(t);
-    Eigen::Matrix3f TBN = Eigen::Matrix3f(t, b, normal);
+    Eigen::Matrix3f TBN;
+    TBN.col(0) = t;
+    TBN.col(1) = b;
+    TBN.col(2) = normal;
 
     // UV.
     const auto uv = payload.tex_coords;
     const auto h_val = payload.texture->getColor(uv.x(), uv.y()).norm();
-    const auto u_val = payload.texture->getColor(uv.x() + 1.f / payload.texture.width, uv.y()).norm();
-    const auto v_val = payload.texture->getColor(uv.x(), uv.y() + 1.f / payload.texture.height).norm();
+    const auto u_val = payload.texture->getColor(uv.x() + 1.f / payload.texture->width, uv.y()).norm();
+    const auto v_val = payload.texture->getColor(uv.x(), uv.y() + 1.f / payload.texture->height).norm();
     
     const auto du = kh * kn * (u_val - h_val);
     const auto dv = kh * kn * (v_val - h_val);
@@ -316,17 +321,22 @@ Eigen::Vector3f bump_fragment_shader(const fragment_shader_payload& payload)
     float kh = 0.2, kn = 0.1;
 
     // TBN.
-    Eigen::Vector3f t = (normal.x() * normal.y() / std::sqrt(normal.x() * normal.x() + normal.z() * normal.z()),
-                         std::sqrt(normal.x() * normal.x() + normal.z() * normal.z()),
-                         normal.z() * normal.y() / std::sqrt(normal.x() * normal.x() + normal.z() * normal.z()));
+    Eigen::Vector3f t{
+        normal.x() * normal.y() / std::sqrt(normal.x() * normal.x() + normal.z() * normal.z()),
+        std::sqrt(normal.x() * normal.x() + normal.z() * normal.z()),
+        normal.z() * normal.y() / std::sqrt(normal.x() * normal.x() + normal.z() * normal.z())
+    };
     Eigen::Vector3f b = normal.cross(t);
-    Eigen::Matrix3f TBN = Eigen::Matrix3f(t, b, normal);
+    Eigen::Matrix3f TBN;
+    TBN.col(0) = t;
+    TBN.col(1) = b;
+    TBN.col(2) = normal;
 
     // UV.
     const auto uv = payload.tex_coords;
     const auto h_val = payload.texture->getColor(uv.x(), uv.y()).norm();
-    const auto u_val = payload.texture->getColor(uv.x() + 1.f / payload.texture.width, uv.y()).norm();
-    const auto v_val = payload.texture->getColor(uv.x(), uv.y() + 1.f / payload.texture.height).norm();
+    const auto u_val = payload.texture->getColor(uv.x() + 1.f / payload.texture->width, uv.y()).norm();
+    const auto v_val = payload.texture->getColor(uv.x(), uv.y() + 1.f / payload.texture->height).norm();
     
     const auto du = kh * kn * (u_val - h_val);
     const auto dv = kh * kn * (v_val - h_val);
