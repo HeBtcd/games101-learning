@@ -71,7 +71,7 @@ public:
     { N = normalize(P - center); }
 
     Vector3f evalDiffuseColor(const Vector2f &st)const {
-        //return m->getColor();
+        return m->Kd;
     }
     Bounds3 getBounds(){
         return Bounds3(Vector3f(center.x-radius, center.y-radius, center.z-radius),

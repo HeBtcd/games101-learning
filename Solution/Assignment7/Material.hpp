@@ -6,6 +6,7 @@
 #define RAYTRACING_MATERIAL_H
 
 #include "Vector.hpp"
+#include "global.hpp"
 
 enum MaterialType { DIFFUSE};
 
@@ -143,6 +144,7 @@ Vector3f Material::sample(const Vector3f &wi, const Vector3f &N){
             break;
         }
     }
+    return Vector3f(0.0f);
 }
 
 float Material::pdf(const Vector3f &wi, const Vector3f &wo, const Vector3f &N){
@@ -157,6 +159,7 @@ float Material::pdf(const Vector3f &wi, const Vector3f &wo, const Vector3f &N){
             break;
         }
     }
+    return 0.0f;
 }
 
 Vector3f Material::eval(const Vector3f &wi, const Vector3f &wo, const Vector3f &N){
@@ -174,6 +177,7 @@ Vector3f Material::eval(const Vector3f &wi, const Vector3f &wo, const Vector3f &
             break;
         }
     }
+    return Vector3f(0.0f);
 }
 
 #endif //RAYTRACING_MATERIAL_H

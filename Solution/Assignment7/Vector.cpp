@@ -3,3 +3,6 @@
 //
 
 #include "Vector.hpp"
+#include "global.hpp"
+
+const float EPSILON = 0.00001f;
